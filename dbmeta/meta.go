@@ -149,7 +149,7 @@ func generateFieldsTypes(db *sql.DB, columns []*sql.ColumnType, depth int, jsonA
 
 func sqlTypeToGoType(mysqlType string, nullable bool, gureguTypes bool) string {
 	switch mysqlType {
-	case "tinyint", "int", "smallint", "mediumint":
+	case "tinyint", "int", "smallint", "mediumint", "int4":
 		if nullable {
 			if gureguTypes {
 				return gureguNullInt
@@ -157,7 +157,7 @@ func sqlTypeToGoType(mysqlType string, nullable bool, gureguTypes bool) string {
 			return sqlNullInt
 		}
 		return golangInt
-	case "bigint":
+	case "bigint", "int8":
 		if nullable {
 			if gureguTypes {
 				return gureguNullInt
@@ -173,12 +173,12 @@ func sqlTypeToGoType(mysqlType string, nullable bool, gureguTypes bool) string {
 			return sqlNullString
 		}
 		return "string"
-	case "date", "datetime", "time", "timestamp":
+	case "date", "datetime", "time", "timestamp", "timestamptz":
 		if nullable && gureguTypes {
 			return gureguNullTime
 		}
 		return golangTime
-	case "decimal", "double":
+	case "decimal", "double", "float8":
 		if nullable {
 			if gureguTypes {
 				return gureguNullFloat
