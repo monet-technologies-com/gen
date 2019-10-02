@@ -85,9 +85,9 @@ const (
 )
 
 // GenerateStruct generates a struct for the given table.
-func GenerateStruct(db *sql.DB, tableName string, structName string, pkgName string, jsonAnnotation bool, gormAnnotation bool, gureguTypes bool) *ModelInfo {
+func GenerateStruct(db *sql.DB, tableName string, structName string, pkgName string, jsonAnnotation bool, gormAnnotation bool, gureguTypes bool, sqlType string) *ModelInfo {
 	cols, _ := schema.Table(db, tableName)
-	fields := generateFieldsTypes(db, cols, 0, jsonAnnotation, gormAnnotation, gureguTypes)
+	fields := generateFieldsTypes(db, cols, 0, jsonAnnotation, gormAnnotation, gureguTypes, sqlType)
 
 	//fields := generateMysqlTypes(db, columnTypes, 0, jsonAnnotation, gormAnnotation, gureguTypes)
 
@@ -103,14 +103,19 @@ func GenerateStruct(db *sql.DB, tableName string, structName string, pkgName str
 }
 
 // Generate fields string
-func generateFieldsTypes(db *sql.DB, columns []*sql.ColumnType, depth int, jsonAnnotation bool, gormAnnotation bool, gureguTypes bool) []string {
+func generateFieldsTypes(db *sql.DB, columns []*sql.ColumnType, depth int, jsonAnnotation bool, gormAnnotation bool, gureguTypes bool, sqlType string) []string {
 
 	//sort.Strings(keys)
 
 	var fields []string
 	var field = ""
 	for i, c := range columns {
-		nullable, _ := c.Nullable()
+		var nullable bool
+		if sqlType == "postgres" {
+			nullable = true
+		} else {
+			nullable, _ = c.Nullable()
+		}
 		key := c.Name()
 		valueType := sqlTypeToGoType(strings.ToLower(c.DatabaseTypeName()), nullable, gureguTypes)
 		if valueType == "" { // unknown type
