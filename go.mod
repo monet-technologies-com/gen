@@ -14,8 +14,9 @@ require (
 	github.com/jinzhu/now v1.0.0 // indirect
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/kr/pretty v0.1.0 // indirect
-	github.com/kr/pty v1.1.3 // indirect
 	github.com/lib/pq v1.1.0
 	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/serenize/snaker v0.0.0-20171204205717-a683aaf2d516
 )
+
+replace github.com/smallnest/gen => github.com/monet-technologies-com/gen v0.0.0-20191002060656-af4ded20992a
