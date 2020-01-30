@@ -20,4 +20,4 @@ require (
 	github.com/serenize/snaker v0.0.0-20171204205717-a683aaf2d516
 )
 
-replace github.com/smallnest/gen => github.com/monet-technologies-com/gen
+replace github.com/smallnest/gen => github.com/monet-technologies-com/gen v0.0.0-20191002060656-af4ded20992a
