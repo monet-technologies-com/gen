@@ -18,9 +18,9 @@ import (
 	"github.com/jinzhu/inflection"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/monet-technologies-com/gen/dbmeta"
+	gtmpl "github.com/monet-technologies-com/gen/template"
 	"github.com/serenize/snaker"
-	"github.com/smallnest/gen/dbmeta"
-	gtmpl "github.com/smallnest/gen/template"
 )
 
 var (
