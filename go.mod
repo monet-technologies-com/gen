@@ -1,4 +1,4 @@
-module github.com/monet-technologies-com/gen
+module github.com/smallnest/gen
 
 go 1.12
 
@@ -19,3 +19,5 @@ require (
 	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/serenize/snaker v0.0.0-20171204205717-a683aaf2d516
 )
+
+replace github.com/smallnest/gen => github.com/monet-technologies-com/gen
