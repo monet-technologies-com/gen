@@ -114,7 +114,7 @@ func main() {
 		structName = inflection.Singular(structName)
 		structNames = append(structNames, structName)
 
-		modelInfo := dbmeta.GenerateStruct(db, tableName, structName, "model", *jsonAnnotation, *gormAnnotation, *gureguTypes)
+		modelInfo := dbmeta.GenerateStruct(db, tableName, structName, *packageName, *jsonAnnotation, *gormAnnotation, *gureguTypes, *sqlType)
 
 		var buf bytes.Buffer
 		err = t.Execute(&buf, modelInfo)
@@ -132,7 +132,7 @@ func main() {
 		if *rest {
 			//write api
 			buf.Reset()
-			err = ct.Execute(&buf, map[string]string{"PackageName": *packageName + "/model", "StructName": structName})
+			err = ct.Execute(&buf, map[string]string{"PackageName": *packageName, "StructName": structName})
 			if err != nil {
 				fmt.Println("Error in rendering controller: " + err.Error())
 				return

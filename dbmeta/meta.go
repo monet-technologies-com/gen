@@ -82,12 +82,13 @@ const (
 	sqlNullString    = "sql.NullString"
 	gureguNullTime   = "null.Time"
 	golangTime       = "time.Time"
+	golangUint8Array = "[]uint8"
 )
 
 // GenerateStruct generates a struct for the given table.
-func GenerateStruct(db *sql.DB, tableName string, structName string, pkgName string, jsonAnnotation bool, gormAnnotation bool, gureguTypes bool) *ModelInfo {
+func GenerateStruct(db *sql.DB, tableName string, structName string, pkgName string, jsonAnnotation bool, gormAnnotation bool, gureguTypes bool, sqlType string) *ModelInfo {
 	cols, _ := schema.Table(db, tableName)
-	fields := generateFieldsTypes(db, cols, 0, jsonAnnotation, gormAnnotation, gureguTypes)
+	fields := generateFieldsTypes(db, cols, 0, jsonAnnotation, gormAnnotation, gureguTypes, sqlType)
 
 	//fields := generateMysqlTypes(db, columnTypes, 0, jsonAnnotation, gormAnnotation, gureguTypes)
 
@@ -103,14 +104,19 @@ func GenerateStruct(db *sql.DB, tableName string, structName string, pkgName str
 }
 
 // Generate fields string
-func generateFieldsTypes(db *sql.DB, columns []*sql.ColumnType, depth int, jsonAnnotation bool, gormAnnotation bool, gureguTypes bool) []string {
+func generateFieldsTypes(db *sql.DB, columns []*sql.ColumnType, depth int, jsonAnnotation bool, gormAnnotation bool, gureguTypes bool, sqlType string) []string {
 
 	//sort.Strings(keys)
 
 	var fields []string
 	var field = ""
 	for i, c := range columns {
-		nullable, _ := c.Nullable()
+		var nullable bool
+		if sqlType == "postgres" {
+			nullable = true
+		} else {
+			nullable, _ = c.Nullable()
+		}
 		key := c.Name()
 		valueType := sqlTypeToGoType(strings.ToLower(c.DatabaseTypeName()), nullable, gureguTypes)
 		if valueType == "" { // unknown type
@@ -149,7 +155,7 @@ func generateFieldsTypes(db *sql.DB, columns []*sql.ColumnType, depth int, jsonA
 
 func sqlTypeToGoType(mysqlType string, nullable bool, gureguTypes bool) string {
 	switch mysqlType {
-	case "tinyint", "int", "smallint", "mediumint":
+	case "tinyint", "int", "smallint", "mediumint", "int4":
 		if nullable {
 			if gureguTypes {
 				return gureguNullInt
@@ -157,7 +163,7 @@ func sqlTypeToGoType(mysqlType string, nullable bool, gureguTypes bool) string {
 			return sqlNullInt
 		}
 		return golangInt
-	case "bigint":
+	case "bigint", "int8":
 		if nullable {
 			if gureguTypes {
 				return gureguNullInt
@@ -173,12 +179,12 @@ func sqlTypeToGoType(mysqlType string, nullable bool, gureguTypes bool) string {
 			return sqlNullString
 		}
 		return "string"
-	case "date", "datetime", "time", "timestamp":
+	case "date", "datetime", "time", "timestamp", "timestamptz":
 		if nullable && gureguTypes {
 			return gureguNullTime
 		}
 		return golangTime
-	case "decimal", "double":
+	case "decimal", "double", "float8":
 		if nullable {
 			if gureguTypes {
 				return gureguNullFloat
@@ -196,6 +202,8 @@ func sqlTypeToGoType(mysqlType string, nullable bool, gureguTypes bool) string {
 		return golangFloat32
 	case "binary", "blob", "longblob", "mediumblob", "varbinary":
 		return golangByteArray
+	case "numeric":
+		return golangUint8Array
 	}
 	return ""
 }
