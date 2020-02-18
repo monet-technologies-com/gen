@@ -82,6 +82,7 @@ const (
 	sqlNullString    = "sql.NullString"
 	gureguNullTime   = "null.Time"
 	golangTime       = "time.Time"
+	golangUint8Array = "[]uint8"
 )
 
 // GenerateStruct generates a struct for the given table.
@@ -201,6 +202,8 @@ func sqlTypeToGoType(mysqlType string, nullable bool, gureguTypes bool) string {
 		return golangFloat32
 	case "binary", "blob", "longblob", "mediumblob", "varbinary":
 		return golangByteArray
+	case "numeric":
+		return golangUint8Array
 	}
 	return ""
 }
